@@ -20,7 +20,7 @@ namespace LegacyOrderService
             // Product name
             string productName;
             var productRepo = new ProductRepository();
-            var products = productRepo.GetAllProducts();
+            var products = await productRepo.GetAllProductsAsync();
             double price;
             while (true)
             {
@@ -35,7 +35,7 @@ namespace LegacyOrderService
                 if (int.TryParse(input, out int choice) && choice >= 1 && choice <= products.Count)
                 {
                     productName = products[choice - 1];
-                    price = productRepo.GetPrice(productName);
+                    price = await productRepo.GetPriceAsync(productName);
                     break;
                 }
 

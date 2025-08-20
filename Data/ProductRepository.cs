@@ -1,11 +1,9 @@
 ﻿// Data/ProductRepository.cs
-using System;
-using System.Collections.Generic;
-using System.Threading;
+using LegacyOrderService.Data.Contracts;
 
 namespace LegacyOrderService.Data
 {
-    public class ProductRepository
+    public class ProductRepository : IProductRepository
     {
         private readonly Dictionary<string, double> _productPrices = new()
         {
@@ -14,10 +12,10 @@ namespace LegacyOrderService.Data
             ["Doohickey"] = 8.75
         };
 
-        public double GetPrice(string productName)
+        public async Task<double> GetPriceAsync(string productName, CancellationToken cancellationToken = default)
         {
             // Simulate an expensive lookup
-            Thread.Sleep(500);
+            await Task.Delay(500, cancellationToken);
 
             if (_productPrices.TryGetValue(productName, out var price))
                 return price;
@@ -25,9 +23,10 @@ namespace LegacyOrderService.Data
             throw new Exception("Product not found");
         }
 
-        public List<string> GetAllProducts()
+        public async Task<List<string>> GetAllProductsAsync()
         {
-            return _productPrices.Select(p => p.Key).ToList();
+            var result = _productPrices.Select(p => p.Key).ToList();
+            return await Task.FromResult(result);
         }
     }
 }
