@@ -9,17 +9,37 @@ namespace LegacyOrderService
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome to Order Processor!");
-            Console.WriteLine("Enter customer name:");
-            string name = Console.ReadLine();
 
-            Console.WriteLine("Enter product name:");
-            string product = Console.ReadLine();
+            // Customer name
+            string customerName;
+            do
+            {
+                Console.Write("Enter customer name (cannot be empty): ");
+                customerName = Console.ReadLine()?.Trim() ?? "";
+            } while (string.IsNullOrWhiteSpace(customerName));
+
+            // Product name
+            string productName;
+            do
+            {
+                Console.Write("Enter product name (cannot be empty): ");
+                productName = Console.ReadLine()?.Trim() ?? "";
+            } while (string.IsNullOrWhiteSpace(productName));
+
             var productRepo = new ProductRepository();
-            double price = productRepo.GetPrice(product);
+            double price = productRepo.GetPrice(productName);
 
+            // Quantity
+            int qty;
+            while (true)
+            {
+                Console.Write("Enter quantity (must be a positive integer): ");
+                var input = Console.ReadLine();
+                if (int.TryParse(input, out qty) && qty > 0)
+                    break;
+                Console.WriteLine("Invalid quantity, please try again.");
+            }
 
-            Console.WriteLine("Enter quantity:");
-            int qty = Convert.ToInt32(Console.ReadLine());
 
             Console.WriteLine("Processing order...");
 
