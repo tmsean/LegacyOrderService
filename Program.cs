@@ -1,6 +1,5 @@
-using System;
-using LegacyOrderService.Models;
 using LegacyOrderService.Data;
+using LegacyOrderService.Services;
 
 namespace LegacyOrderService
 {
@@ -43,23 +42,17 @@ namespace LegacyOrderService
 
             Console.WriteLine("Processing order...");
 
-            Order order = new Order();
-            order.CustomerName = name;
-            order.ProductName = product;
-            order.Quantity = qty;
-            order.Price = 10.0;
-
-            double total = order.Quantity * order.Price;
+            double total = qty * 10.0;
 
             Console.WriteLine("Order complete!");
-            Console.WriteLine("Customer: " + order.CustomerName);
-            Console.WriteLine("Product: " + order.ProductName);
-            Console.WriteLine("Quantity: " + order.Quantity);
-            Console.WriteLine("Total: $" + price);
+            Console.WriteLine("Customer: " + customerName);
+            Console.WriteLine("Product: " + productName);
+            Console.WriteLine("Quantity: " + qty);
+            Console.WriteLine("Total: $" + total);
 
             Console.WriteLine("Saving order to database...");
-            var repo = new OrderRepository();
-            repo.Save(order);
+            var service = new OrderService();
+            service.CreateOrder(customerName, productName, qty, price);
             Console.WriteLine("Done.");
         }
     }
