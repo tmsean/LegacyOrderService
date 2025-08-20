@@ -1,0 +1,36 @@
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+# NuGet packages
+*.nupkg
+**/packages/*
+# except build/, which is used as an MSBuild target
+!**/packages/build/
+
+# Visual Studio Code
+.vscode/
+
+# Others
+.vs/
+*.Cache
+ClientBin/
+[Ss]tyle[Cc]op.*
+~$*
+*~
+*.dbmdl
+*.dbproj.schemaview
+*.pfx
+*.publishsettings
+node_modules/
