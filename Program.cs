@@ -19,14 +19,28 @@ namespace LegacyOrderService
 
             // Product name
             string productName;
-            do
-            {
-                Console.Write("Enter product name (cannot be empty): ");
-                productName = Console.ReadLine()?.Trim() ?? "";
-            } while (string.IsNullOrWhiteSpace(productName));
-
             var productRepo = new ProductRepository();
-            double price = productRepo.GetPrice(productName);
+            var products = productRepo.GetAllProducts();
+            double price;
+            while (true)
+            {
+                Console.WriteLine("Available products:");
+                for (int i = 0; i < products.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}. {products[i]}");
+                }
+
+                Console.Write("Select a product by number: ");
+                var input = Console.ReadLine();
+                if (int.TryParse(input, out int choice) && choice >= 1 && choice <= products.Count)
+                {
+                    productName = products[choice - 1];
+                    price = productRepo.GetPrice(productName);
+                    break;
+                }
+
+                Console.WriteLine("Invalid selection, please try again.");
+            }
 
             // Quantity
             int qty;
@@ -42,7 +56,7 @@ namespace LegacyOrderService
 
             Console.WriteLine("Processing order...");
 
-            double total = qty * 10.0;
+            double total = qty * price;
 
             Console.WriteLine("Order complete!");
             Console.WriteLine("Customer: " + customerName);
