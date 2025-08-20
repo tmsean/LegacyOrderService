@@ -1,6 +1,5 @@
-using System;
-using LegacyOrderService.Models;
 using LegacyOrderService.Data;
+using LegacyOrderService.Services;
 
 namespace LegacyOrderService
 {
@@ -9,37 +8,65 @@ namespace LegacyOrderService
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome to Order Processor!");
-            Console.WriteLine("Enter customer name:");
-            string name = Console.ReadLine();
 
-            Console.WriteLine("Enter product name:");
-            string product = Console.ReadLine();
+            // Customer name
+            string customerName;
+            do
+            {
+                Console.Write("Enter customer name (cannot be empty): ");
+                customerName = Console.ReadLine()?.Trim() ?? "";
+            } while (string.IsNullOrWhiteSpace(customerName));
+
+            // Product name
+            string productName;
             var productRepo = new ProductRepository();
-            double price = productRepo.GetPrice(product);
+            var products = productRepo.GetAllProducts();
+            double price;
+            while (true)
+            {
+                Console.WriteLine("Available products:");
+                for (int i = 0; i < products.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}. {products[i]}");
+                }
 
+                Console.Write("Select a product by number: ");
+                var input = Console.ReadLine();
+                if (int.TryParse(input, out int choice) && choice >= 1 && choice <= products.Count)
+                {
+                    productName = products[choice - 1];
+                    price = productRepo.GetPrice(productName);
+                    break;
+                }
 
-            Console.WriteLine("Enter quantity:");
-            int qty = Convert.ToInt32(Console.ReadLine());
+                Console.WriteLine("Invalid selection, please try again.");
+            }
+
+            // Quantity
+            int qty;
+            while (true)
+            {
+                Console.Write("Enter quantity (must be a positive integer): ");
+                var input = Console.ReadLine();
+                if (int.TryParse(input, out qty) && qty > 0)
+                    break;
+                Console.WriteLine("Invalid quantity, please try again.");
+            }
+
 
             Console.WriteLine("Processing order...");
 
-            Order order = new Order();
-            order.CustomerName = name;
-            order.ProductName = product;
-            order.Quantity = qty;
-            order.Price = 10.0;
-
-            double total = order.Quantity * order.Price;
+            double total = qty * price;
 
             Console.WriteLine("Order complete!");
-            Console.WriteLine("Customer: " + order.CustomerName);
-            Console.WriteLine("Product: " + order.ProductName);
-            Console.WriteLine("Quantity: " + order.Quantity);
-            Console.WriteLine("Total: $" + price);
+            Console.WriteLine("Customer: " + customerName);
+            Console.WriteLine("Product: " + productName);
+            Console.WriteLine("Quantity: " + qty);
+            Console.WriteLine("Total: $" + total);
 
             Console.WriteLine("Saving order to database...");
-            var repo = new OrderRepository();
-            repo.Save(order);
+            var service = new OrderService();
+            service.CreateOrder(customerName, productName, qty, price);
             Console.WriteLine("Done.");
         }
     }
