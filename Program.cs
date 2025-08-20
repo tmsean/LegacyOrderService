@@ -5,7 +5,7 @@ namespace LegacyOrderService
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Console.WriteLine("Welcome to Order Processor!");
 
@@ -53,7 +53,6 @@ namespace LegacyOrderService
                 Console.WriteLine("Invalid quantity, please try again.");
             }
 
-
             Console.WriteLine("Processing order...");
 
             double total = qty * price;
@@ -65,8 +64,9 @@ namespace LegacyOrderService
             Console.WriteLine("Total: $" + total);
 
             Console.WriteLine("Saving order to database...");
-            var service = new OrderService();
-            service.CreateOrder(customerName, productName, qty, price);
+            var orderRepo = new OrderRepository();
+            var service = new OrderService(orderRepo);
+            await service.CreateOrderAsync(customerName, productName, qty, price);
             Console.WriteLine("Done.");
         }
     }
