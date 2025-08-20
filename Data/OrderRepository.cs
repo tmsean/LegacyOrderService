@@ -11,11 +11,11 @@ namespace LegacyOrderService.Data
 
         public void Save(Order order)
         {
-            var connection = new SqliteConnection(_connectionString));
+            using var connection = new SqliteConnection(_connectionString);
             
             connection.Open();
 
-            var command = connection.CreateCommand();
+            using var command = connection.CreateCommand();
             command.CommandText = $@"
                 INSERT INTO Orders (CustomerName, ProductName, Quantity, Price)
                 VALUES ('{order.CustomerName}', '{order.ProductName}', {order.Quantity}, {order.Price})";
@@ -25,12 +25,11 @@ namespace LegacyOrderService.Data
 
         public void SeedBadData()
         {
-            var connection = new SqliteConnection(_connectionString);            
+            using var connection = new SqliteConnection(_connectionString);            
             connection.Open();
-            var cmd = connection.CreateCommand();
+            using var cmd = connection.CreateCommand();
             cmd.CommandText = "INSERT INTO Orders (CustomerName, ProductName, Quantity, Price) VALUES ('John', 'Widget', 9999, 9.99)";
-            cmd.ExecuteNonQuery();
-            
+            cmd.ExecuteNonQuery(); 
         }
     }
 }
