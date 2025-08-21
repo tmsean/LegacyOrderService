@@ -1,15 +1,30 @@
 using LegacyOrderService.Data;
+using LegacyOrderService.Data.Contracts;
 using LegacyOrderService.Services;
+using LegacyOrderService.Services.Contracts;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace LegacyOrderService
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
+            using var host = Host.CreateDefaultBuilder(args)
+                .ConfigureServices(services =>
+                {
+                    services.AddSingleton<IOrderRepository, OrderRepository>();
+                    services.AddSingleton<IOrderService, OrderService>();
+                    services.AddSingleton<IProductRepository, ProductRepository>();
+                })
+                .Build();
+
+            var productRepository = host.Services.GetRequiredService<IProductRepository>();
+            var orderService = host.Services.GetRequiredService<IOrderService>();
+
             Console.WriteLine("Welcome to Order Processor!");
 
-            // Customer name
             string customerName;
             do
             {
@@ -17,42 +32,35 @@ namespace LegacyOrderService
                 customerName = Console.ReadLine()?.Trim() ?? "";
             } while (string.IsNullOrWhiteSpace(customerName));
 
-            // Product name
+            var products = await productRepository.GetAllProductsAsync();
+
             string productName;
-            var productRepo = new ProductRepository();
-            var products = productRepo.GetAllProducts();
             double price;
             while (true)
             {
                 Console.WriteLine("Available products:");
                 for (int i = 0; i < products.Count; i++)
-                {
                     Console.WriteLine($"{i + 1}. {products[i]}");
-                }
 
                 Console.Write("Select a product by number: ");
                 var input = Console.ReadLine();
                 if (int.TryParse(input, out int choice) && choice >= 1 && choice <= products.Count)
                 {
                     productName = products[choice - 1];
-                    price = productRepo.GetPrice(productName);
+                    price = await productRepository.GetPriceAsync(productName);
                     break;
                 }
-
                 Console.WriteLine("Invalid selection, please try again.");
             }
 
-            // Quantity
             int qty;
             while (true)
             {
                 Console.Write("Enter quantity (must be a positive integer): ");
                 var input = Console.ReadLine();
-                if (int.TryParse(input, out qty) && qty > 0)
-                    break;
+                if (int.TryParse(input, out qty) && qty > 0) break;
                 Console.WriteLine("Invalid quantity, please try again.");
             }
-
 
             Console.WriteLine("Processing order...");
 
@@ -65,8 +73,7 @@ namespace LegacyOrderService
             Console.WriteLine("Total: $" + total);
 
             Console.WriteLine("Saving order to database...");
-            var service = new OrderService();
-            service.CreateOrder(customerName, productName, qty, price);
+            await orderService.CreateOrderAsync(customerName, productName, qty, price);
             Console.WriteLine("Done.");
         }
     }
