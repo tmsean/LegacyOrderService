@@ -6,40 +6,45 @@ namespace LegacyOrderService.Services
 {
     public class OrderProcessingApp
     {
-        private readonly IProductRepository _productRepository;
         private readonly IOrderService _orderService;
+        private readonly IProductRepository _productRepository;
+        private readonly IUserInteractionService _ui;
 
-        public OrderProcessingApp(IProductRepository productRepository, IOrderService orderService)
+        public OrderProcessingApp(
+            IOrderService orderService,
+            IProductRepository productRepository,
+            IUserInteractionService ui)
         {
-            _productRepository = productRepository;
             _orderService = orderService;
+            _productRepository = productRepository;
+            _ui = ui;
         }
 
         public async Task RunAsync()
         {
-            Console.WriteLine("Welcome to Order Processor!");
+            _ui.ShowMessage("Welcome to Order Processor!");
 
-            var customerName = ConsolePrompts.ReadNonEmpty("Enter customer name (cannot be empty): ");
+            var customerName = await _ui.GetCustomerNameAsync();
 
             var products = await _productRepository.GetAllProductsAsync();
-            var productName = ConsolePrompts.SelectFromList("Available products:", products);
+            var productName = await _ui.SelectProductAsync(products);
+
             var price = await _productRepository.GetPriceAsync(productName);
+            var qty = await _ui.GetQuantityAsync();
 
-            var qty = ConsolePrompts.ReadPositiveInt("Enter quantity (must be a positive integer): ");
+            _ui.ShowMessage("Processing order...");
 
-            Console.WriteLine("Processing order...");
+            double total = qty * price;
 
-            var total = qty * price;
+            _ui.ShowMessage("Order complete!");
+            _ui.ShowMessage($"Customer: {customerName}");
+            _ui.ShowMessage($"Product: {productName}");
+            _ui.ShowMessage($"Quantity: {qty}");
+            _ui.ShowMessage($"Total: ${total}");
 
-            Console.WriteLine("Order complete!");
-            Console.WriteLine("Customer: " + customerName);
-            Console.WriteLine("Product: " + productName);
-            Console.WriteLine("Quantity: " + qty);
-            Console.WriteLine("Total: $" + total);
-
-            Console.WriteLine("Saving order to database...");
+            _ui.ShowMessage("Saving order to database...");
             await _orderService.CreateOrderAsync(customerName, productName, qty, price);
-            Console.WriteLine("Done.");
+            _ui.ShowMessage("Done.");
         }
     }
 }
