@@ -2,6 +2,7 @@ using LegacyOrderService.Data;
 using LegacyOrderService.Data.Contracts;
 using LegacyOrderService.Services;
 using LegacyOrderService.Services.Contracts;
+using LegacyOrderService.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -25,42 +26,13 @@ namespace LegacyOrderService
 
             Console.WriteLine("Welcome to Order Processor!");
 
-            string customerName;
-            do
-            {
-                Console.Write("Enter customer name (cannot be empty): ");
-                customerName = Console.ReadLine()?.Trim() ?? "";
-            } while (string.IsNullOrWhiteSpace(customerName));
+            string customerName = ConsolePrompts.ReadNonEmpty("Enter customer name (cannot be empty): ");
 
             var products = await productRepository.GetAllProductsAsync();
+            string productName = ConsolePrompts.SelectFromList("Available products:", products);
+            var price = await productRepository.GetPriceAsync(productName);
 
-            string productName;
-            double price;
-            while (true)
-            {
-                Console.WriteLine("Available products:");
-                for (int i = 0; i < products.Count; i++)
-                    Console.WriteLine($"{i + 1}. {products[i]}");
-
-                Console.Write("Select a product by number: ");
-                var input = Console.ReadLine();
-                if (int.TryParse(input, out int choice) && choice >= 1 && choice <= products.Count)
-                {
-                    productName = products[choice - 1];
-                    price = await productRepository.GetPriceAsync(productName);
-                    break;
-                }
-                Console.WriteLine("Invalid selection, please try again.");
-            }
-
-            int qty;
-            while (true)
-            {
-                Console.Write("Enter quantity (must be a positive integer): ");
-                var input = Console.ReadLine();
-                if (int.TryParse(input, out qty) && qty > 0) break;
-                Console.WriteLine("Invalid quantity, please try again.");
-            }
+            var qty = ConsolePrompts.ReadPositiveInt("Enter quantity (must be a positive integer): ");
 
             Console.WriteLine("Processing order...");
 
