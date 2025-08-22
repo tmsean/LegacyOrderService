@@ -1,4 +1,6 @@
-﻿namespace LegacyOrderService.Services.Contracts
+﻿using LegacyOrderService.Models;
+
+namespace LegacyOrderService.Services.Contracts
 {
     public interface IUserInteractionService
     {
@@ -6,5 +8,6 @@
         Task<string> SelectProductAsync(IReadOnlyList<string> products);
         Task<int> GetQuantityAsync();
         void ShowMessage(string message);
+        void ShowOrder(Order order);
     }
 }

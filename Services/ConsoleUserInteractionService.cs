@@ -1,4 +1,5 @@
-﻿using LegacyOrderService.Services.Contracts;
+﻿using LegacyOrderService.Models;
+using LegacyOrderService.Services.Contracts;
 
 namespace LegacyOrderService.Services
 {
@@ -87,5 +88,15 @@ namespace LegacyOrderService.Services
         }
 
         public void ShowMessage(string message) => Console.WriteLine(message);
+
+        public void ShowOrder(Order order)
+        {
+            var total = order.Quantity * order.Price;
+            ShowMessage($"Id: {order.Id}");
+            ShowMessage($"Customer: {order.CustomerName}");
+            ShowMessage($"Product: {order.ProductName}");
+            ShowMessage($"Quantity: {order.Quantity}");
+            ShowMessage($"Total: ${total}");
+        }
     }
 }
