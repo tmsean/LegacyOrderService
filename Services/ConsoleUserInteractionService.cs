@@ -5,86 +5,21 @@ namespace LegacyOrderService.Services
 {
     public class ConsoleUserInteractionService : IUserInteractionService
     {
-        private readonly IOrderValidationService _validator;
-
-        public ConsoleUserInteractionService(IOrderValidationService validator)
+        public Task<string> ReadCustomerNameAsync()
         {
-            _validator = validator;
+            Console.Write("Enter customer name (cannot be empty): ");
+            return Task.FromResult(Console.ReadLine()?.Trim() ?? "");
         }
 
-        public Task<string> GetCustomerNameAsync()
+        public Task<string> ReadProductChoiceAsync()
         {
-            while (true)
-            {
-                Console.Write("Enter customer name (cannot be empty): ");
-                var customerName = Console.ReadLine()?.Trim() ?? "";
-
-                try
-                {
-                    _validator.ValidateCustomerName(customerName);
-                    return Task.FromResult(customerName);
-                }
-                catch (ArgumentException ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-            }
+            Console.Write("Select a product by number (must be the one from the list): ");
+            return Task.FromResult(Console.ReadLine()?.Trim() ?? "");
         }
-
-        public Task<string> SelectProductAsync(IReadOnlyList<string> products)
+        public Task<string> ReadQuantityAsync()
         {
-            while (true)
-            {
-                Console.WriteLine("Available products:");
-                for (int i = 0; i < products.Count; i++)
-                    Console.WriteLine($"{i + 1}. {products[i]}");
-
-                Console.Write("Select a product by number: ");
-                var input = Console.ReadLine();
-                if (int.TryParse(input, out int choice) && choice >= 1 && choice <= products.Count)
-                {
-                    var selected = products[choice - 1];
-                    try
-                    {
-                        _validator.ValidateProduct(selected, products);
-                        return Task.FromResult(selected);
-                    }
-                    catch (ArgumentException ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Invalid selection, please try again.");
-                }
-            }
-        }
-
-        public Task<int> GetQuantityAsync()
-        {
-            while (true)
-            {
-                Console.Write("Enter quantity (must be a positive integer): ");
-                var input = Console.ReadLine();
-
-                if (int.TryParse(input, out int qty))
-                {
-                    try
-                    {
-                        _validator.ValidateQuantity(qty);
-                        return Task.FromResult(qty);
-                    }
-                    catch (ArgumentException ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Invalid number, please try again.");
-                }
-            }
+            Console.Write("Enter quantity (must be a positive integer): ");
+            return Task.FromResult(Console.ReadLine()?.Trim() ?? "");
         }
 
         public void ShowMessage(string message) => Console.WriteLine(message);
@@ -97,6 +32,13 @@ namespace LegacyOrderService.Services
             ShowMessage($"Product: {order.ProductName}");
             ShowMessage($"Quantity: {order.Quantity}");
             ShowMessage($"Total: ${total}");
+        }
+
+        public void ShowProducts(IReadOnlyList<string> products)
+        {
+            Console.WriteLine("Available products:");
+            for (int i = 0; i < products.Count; i++)
+                Console.WriteLine($"{i + 1}. {products[i]}");
         }
     }
 }

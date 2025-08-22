@@ -10,16 +10,18 @@ namespace LegacyOrderService.Services
                 throw new ArgumentException("Customer name cannot be empty.");
         }
 
-        public void ValidateQuantity(int qty)
+        public int ParseAndValidateQuantity(string qtyInput)
         {
-            if (qty <= 0)
+            if (!int.TryParse(qtyInput, out var qty) || qty <= 0)
                 throw new ArgumentException("Quantity must be a positive integer.");
+            return qty;
         }
 
-        public void ValidateProduct(string product, IReadOnlyList<string> products)
+        public string ParseAndValidateProductChoice(string choiceInput, IReadOnlyList<string> products)
         {
-            if (!products.Contains(product))
-                throw new ArgumentException($"Invalid product: {product}");
+            if (!int.TryParse(choiceInput, out var idx) || idx < 1 || idx > products.Count)
+                throw new ArgumentException("Invalid selection.");
+            return products[idx - 1];
         }
     }
 }

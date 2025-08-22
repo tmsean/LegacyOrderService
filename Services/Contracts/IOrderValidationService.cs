@@ -3,7 +3,7 @@
     public interface IOrderValidationService
     {
         void ValidateCustomerName(string name);
-        void ValidateQuantity(int qty);
-        void ValidateProduct(string product, IReadOnlyList<string> products);
+        int ParseAndValidateQuantity(string qtyInput);
+        string ParseAndValidateProductChoice(string choiceInput, IReadOnlyList<string> products);
     }
 }
