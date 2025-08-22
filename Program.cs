@@ -18,6 +18,7 @@ namespace LegacyOrderService
                     services.AddSingleton<IOrderService, OrderService>();
                     services.AddSingleton<IProductRepository, ProductRepository>();
                     services.AddSingleton<IUserInteractionService, ConsoleUserInteractionService>();
+                    services.AddSingleton<IOrderValidationService, OrderValidationService>();
                     services.AddSingleton<OrderProcessingApp>();
                 })
                 .Build();

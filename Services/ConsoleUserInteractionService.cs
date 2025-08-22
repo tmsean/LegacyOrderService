@@ -4,16 +4,30 @@ namespace LegacyOrderService.Services
 {
     public class ConsoleUserInteractionService : IUserInteractionService
     {
+        private readonly IOrderValidationService _validator;
+
+        public ConsoleUserInteractionService(IOrderValidationService validator)
+        {
+            _validator = validator;
+        }
+
         public Task<string> GetCustomerNameAsync()
         {
-            string customerName;
-            do
+            while (true)
             {
                 Console.Write("Enter customer name (cannot be empty): ");
-                customerName = Console.ReadLine()?.Trim() ?? "";
-            } while (string.IsNullOrWhiteSpace(customerName));
+                var customerName = Console.ReadLine()?.Trim() ?? "";
 
-            return Task.FromResult(customerName);
+                try
+                {
+                    _validator.ValidateCustomerName(customerName);
+                    return Task.FromResult(customerName);
+                }
+                catch (ArgumentException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
         }
 
         public Task<string> SelectProductAsync(IReadOnlyList<string> products)
@@ -27,9 +41,22 @@ namespace LegacyOrderService.Services
                 Console.Write("Select a product by number: ");
                 var input = Console.ReadLine();
                 if (int.TryParse(input, out int choice) && choice >= 1 && choice <= products.Count)
-                    return Task.FromResult(products[choice - 1]);
-
-                Console.WriteLine("Invalid selection, please try again.");
+                {
+                    var selected = products[choice - 1];
+                    try
+                    {
+                        _validator.ValidateProduct(selected, products);
+                        return Task.FromResult(selected);
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid selection, please try again.");
+                }
             }
         }
 
@@ -39,10 +66,23 @@ namespace LegacyOrderService.Services
             {
                 Console.Write("Enter quantity (must be a positive integer): ");
                 var input = Console.ReadLine();
-                if (int.TryParse(input, out int qty) && qty > 0)
-                    return Task.FromResult(qty);
 
-                Console.WriteLine("Invalid quantity, please try again.");
+                if (int.TryParse(input, out int qty))
+                {
+                    try
+                    {
+                        _validator.ValidateQuantity(qty);
+                        return Task.FromResult(qty);
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid number, please try again.");
+                }
             }
         }
 
