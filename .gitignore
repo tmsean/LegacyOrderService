@@ -1,36 +1,18 @@
-# User-specific files
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
-
 # Build results
-[Dd]ebug/
-[Rr]elease/
 [Bb]in/
 [Oo]bj/
-msbuild.log
-msbuild.err
-msbuild.wrn
 
-# NuGet packages
-*.nupkg
-**/packages/*
-# except build/, which is used as an MSBuild target
-!**/packages/build/
+# NuGet generated
+project.lock.json
+project.fragment.lock.json
+artifacts/
+*_i.c
+*_p.c
+*.nuget.g.props
+*.nuget.g.targets
+*.nuget.dgspec.json
+project.assets.json
+*.nuget.cache
 
-# Visual Studio Code
-.vscode/
-
-# Others
+# Visual Studio
 .vs/
-*.Cache
-ClientBin/
-[Ss]tyle[Cc]op.*
-~$*
-*~
-*.dbmdl
-*.dbproj.schemaview
-*.pfx
-*.publishsettings
-node_modules/
