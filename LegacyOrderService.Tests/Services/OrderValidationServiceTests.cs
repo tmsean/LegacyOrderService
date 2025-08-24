@@ -78,10 +78,10 @@ namespace LegacyOrderService.Tests.Services
             IReadOnlyList<string> products = new List<string> { "Widget", "Gadget", "Doohickey" };
 
             // act
-            var product = sut.ParseAndValidateProductChoice(input, products);
+            var productIndex = sut.ParseAndValidateProductIndex(input, products.Count);
 
             // assert
-            Assert.Equal(expected, product);
+            Assert.Equal(expected, products[productIndex]);
         }
 
         [Theory]
@@ -97,7 +97,7 @@ namespace LegacyOrderService.Tests.Services
             IReadOnlyList<string> products = new List<string> { "Widget", "Gadget", "Doohickey" };
 
             // act
-            var ex = Assert.Throws<ArgumentException>(() => sut.ParseAndValidateProductChoice(input, products));
+            var ex = Assert.Throws<ArgumentException>(() => sut.ParseAndValidateProductIndex(input, products.Count));
 
             // assert
             Assert.Equal("Invalid selection.", ex.Message);

@@ -49,15 +49,16 @@ namespace LegacyOrderService.Services
                 _ui.ShowProducts(products);
 
                 //Get product choice from prompt
-                string productName;
+                int productIndex;
                 while (true)
                 {
                     var choice = await _ui.ReadProductChoiceAsync();
-                    try { 
-                        productName = _validator.ParseAndValidateProductChoice(choice, products); 
+                    try {
+                        productIndex = _validator.ParseAndValidateProductIndex(choice, products.Count);
                         break; }
                     catch (ArgumentException ex) { _ui.ShowMessage(ex.Message); }
                 }
+                var productName = products[productIndex - 1];
 
                 //Fetch product's price based off the option
                 var price = await _productRepository.GetPriceAsync(productName);
