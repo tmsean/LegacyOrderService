@@ -52,7 +52,7 @@ namespace LegacyOrderService.Tests.Services
                 .Setup(v => v.ValidateCustomerName("Alice"));
 
             _mockProductRepository
-                .Setup(p => p.GetAllProductsAsync())
+                .Setup(p => p.GetAllProductKeysAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(products);
             _mockUserInteractionService
                 .Setup(u => u.ShowProducts(products));
@@ -122,7 +122,7 @@ namespace LegacyOrderService.Tests.Services
                 .Setup(v => v.ValidateCustomerName("Bob"));
 
             _mockProductRepository
-                .Setup(p => p.GetAllProductsAsync())
+                .Setup(p => p.GetAllProductKeysAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(products);
             _mockUserInteractionService
                 .Setup(u => u.ShowProducts(products));

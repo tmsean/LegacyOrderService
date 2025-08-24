@@ -11,7 +11,7 @@ namespace LegacyOrderService.Tests.Models.Data
             var repo = new ProductRepository();
 
             // act
-            var list = await repo.GetAllProductsAsync();
+            var list = await repo.GetAllProductKeysAsync();
 
             // assert
             Assert.NotNull(list);

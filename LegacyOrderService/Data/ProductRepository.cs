@@ -1,5 +1,6 @@
 ﻿// Data/ProductRepository.cs
 using LegacyOrderService.Data.Contracts;
+using System.Threading;
 
 namespace LegacyOrderService.Data
 {
@@ -23,8 +24,11 @@ namespace LegacyOrderService.Data
             throw new Exception("Product not found");
         }
 
-        public async Task<List<string>> GetAllProductsAsync()
+        public async Task<List<string>> GetAllProductKeysAsync(CancellationToken cancellationToken = default)
         {
+            //Simulate an expensive lookup
+            await Task.Delay(500, cancellationToken);
+
             var result = _productPrices.Select(p => p.Key).ToList();
             return await Task.FromResult(result);
         }
