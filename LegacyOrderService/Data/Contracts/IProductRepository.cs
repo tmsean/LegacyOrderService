@@ -3,6 +3,6 @@
     public interface IProductRepository
     {
         Task<double> GetPriceAsync(string productName, CancellationToken cancellationToken = default);
-        Task<List<string>> GetAllProductsAsync();
+        Task<List<string>> GetAllProductKeysAsync(CancellationToken cancellationToken = default);
     }
 }

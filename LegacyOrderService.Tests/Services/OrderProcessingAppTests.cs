@@ -52,7 +52,7 @@ namespace LegacyOrderService.Tests.Services
                 .Setup(v => v.ValidateCustomerName("Alice"));
 
             _mockProductRepository
-                .Setup(p => p.GetAllProductsAsync())
+                .Setup(p => p.GetAllProductKeysAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(products);
             _mockUserInteractionService
                 .Setup(u => u.ShowProducts(products));
@@ -61,11 +61,11 @@ namespace LegacyOrderService.Tests.Services
                 .Setup(u => u.ReadProductChoiceAsync())
                 .ReturnsAsync(() => productChoiceInputs.Dequeue());
             _mockOrderValidationService
-                .Setup(v => v.ParseAndValidateProductChoice("99", products))
+                .Setup(v => v.ParseAndValidateProductIndex("99", products.Count))
                 .Throws<ArgumentException>();
             _mockOrderValidationService
-                .Setup(v => v.ParseAndValidateProductChoice("1", products))
-                .Returns("Widget");
+                .Setup(v => v.ParseAndValidateProductIndex("1", products.Count))
+                .Returns(1);
 
             _mockProductRepository
                 .Setup(p => p.GetPriceAsync("Widget", It.IsAny<CancellationToken>()))
@@ -122,7 +122,7 @@ namespace LegacyOrderService.Tests.Services
                 .Setup(v => v.ValidateCustomerName("Bob"));
 
             _mockProductRepository
-                .Setup(p => p.GetAllProductsAsync())
+                .Setup(p => p.GetAllProductKeysAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(products);
             _mockUserInteractionService
                 .Setup(u => u.ShowProducts(products));
@@ -131,8 +131,8 @@ namespace LegacyOrderService.Tests.Services
                 .Setup(u => u.ReadProductChoiceAsync())
                 .ReturnsAsync("1");
             _mockOrderValidationService
-                .Setup(v => v.ParseAndValidateProductChoice("1", products))
-                .Returns("Widget");
+                .Setup(v => v.ParseAndValidateProductIndex("1", products.Count))
+                .Returns(1);
 
             _mockProductRepository
                 .Setup(p => p.GetPriceAsync("Widget", It.IsAny<CancellationToken>()))

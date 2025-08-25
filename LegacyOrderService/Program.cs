@@ -14,12 +14,14 @@ namespace LegacyOrderService
             using var host = Host.CreateDefaultBuilder(args)
                 .ConfigureServices(services =>
                 {
-                    services.AddSingleton<IOrderRepository, OrderRepository>();
-                    services.AddSingleton<IOrderService, OrderService>();
-                    services.AddSingleton<IProductRepository, ProductRepository>();
-                    services.AddSingleton<IUserInteractionService, ConsoleUserInteractionService>();
+                    services.AddScoped<IOrderRepository, OrderRepository>();
+                    services.AddScoped<IOrderService, OrderService>();
+                    services.AddScoped<IProductRepository, ProductRepository>();
+
                     services.AddSingleton<IOrderValidationService, OrderValidationService>();
-                    services.AddSingleton<OrderProcessingApp>();
+                    services.AddSingleton<IUserInteractionService, ConsoleUserInteractionService>();
+
+                    services.AddScoped<OrderProcessingApp>();
                 })
                 .Build();
 

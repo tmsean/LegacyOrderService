@@ -31,36 +31,54 @@ namespace LegacyOrderService.Services
             {
                 _ui.ShowMessage("Welcome to Order Processor!");
 
+                //Get customer's name from prompt
                 string customerName;
                 while (true)
                 {
                     var input = await _ui.ReadCustomerNameAsync();
-                    try { _validator.ValidateCustomerName(input); customerName = input; break; }
+                    try 
+                    { 
+                        _validator.ValidateCustomerName(input); 
+                        customerName = input; 
+                        break; 
+                    }
                     catch (ArgumentException ex) { _ui.ShowMessage(ex.Message); }
                 }
 
-                var products = await _productRepository.GetAllProductsAsync();
+                var products = await _productRepository.GetAllProductKeysAsync();
                 _ui.ShowProducts(products);
 
-                string productName;
+                //Get product choice from prompt
+                int productIndex;
                 while (true)
                 {
                     var choice = await _ui.ReadProductChoiceAsync();
-                    try { productName = _validator.ParseAndValidateProductChoice(choice, products); break; }
+                    try {
+                        productIndex = _validator.ParseAndValidateProductIndex(choice, products.Count);
+                        break; }
                     catch (ArgumentException ex) { _ui.ShowMessage(ex.Message); }
                 }
+                var productName = products[productIndex - 1];
 
+                //Fetch product's price based off the option
                 var price = await _productRepository.GetPriceAsync(productName);
 
+                //Get quantity of product from prompt
                 int qty;
                 while (true)
                 {
                     var input = await _ui.ReadQuantityAsync();
-                    try { qty = _validator.ParseAndValidateQuantity(input); break; }
+                    try 
+                    { 
+                        qty = _validator.ParseAndValidateQuantity(input); 
+                        break; 
+                    }
                     catch (ArgumentException ex) { _ui.ShowMessage(ex.Message); }
                 }
 
                 _ui.ShowMessage("Saving order to database...");
+                
+                //Create the order and fetch the created record from the database
                 var newOrderId = await _orderService.CreateOrderAsync(customerName, productName, qty, price);
                 var created = await _orderRepository.GetByIdAsync(newOrderId);
                 if (created is null)
@@ -69,6 +87,7 @@ namespace LegacyOrderService.Services
                     return;
                 }
 
+                //Display the created product
                 _ui.ShowMessage("Order complete!");
                 _ui.ShowOrder(created);
                 _ui.ShowMessage("Done.");

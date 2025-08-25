@@ -1,27 +1,22 @@
-﻿using LegacyOrderService.Services.Contracts;
-
-namespace LegacyOrderService.Services
+﻿public class OrderValidationService : IOrderValidationService
 {
-    public class OrderValidationService : IOrderValidationService
+    public void ValidateCustomerName(string name)
     {
-        public void ValidateCustomerName(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Customer name cannot be empty.");
-        }
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Customer name cannot be empty.");
+    }
 
-        public int ParseAndValidateQuantity(string qtyInput)
-        {
-            if (!int.TryParse(qtyInput, out var qty) || qty <= 0)
-                throw new ArgumentException("Quantity must be a positive integer.");
-            return qty;
-        }
+    public int ParseAndValidateQuantity(string qtyInput)
+    {
+        if (!int.TryParse(qtyInput, out var qty) || qty <= 0)
+            throw new ArgumentException("Quantity must be a positive integer.");
+        return qty;
+    }
 
-        public string ParseAndValidateProductChoice(string choiceInput, IReadOnlyList<string> products)
-        {
-            if (!int.TryParse(choiceInput, out var idx) || idx < 1 || idx > products.Count)
-                throw new ArgumentException("Invalid selection.");
-            return products[idx - 1];
-        }
+    public int ParseAndValidateProductIndex(string choiceInput, int optionsCount)
+    {
+        if (!int.TryParse(choiceInput, out var idx) || idx < 1 || idx > optionsCount)
+            throw new ArgumentException("Invalid selection.");
+        return idx;
     }
 }
